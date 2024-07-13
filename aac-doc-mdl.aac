@@ -1,0 +1,6 @@
+project:
+  name: aac-doc-mdl
+  description: An AI powered plugin for Architecture-as-Code that supports MBSE document development.
+  uses:
+    - name: openai
+      version: 1.30.5

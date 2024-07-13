@@ -1,0 +1,68 @@
+model:
+  name: Appetizers
+  description: |
+    The appetizer section of the cookbook.
+  behavior:
+    - name: Chips and Salsa
+      description: |
+        My favorite Mexican starter recipe.  Includes a brief introduction, a list of ingredients, and preparation instructions.
+      acceptance:
+        name: Chips and Salsa Test
+        scenarios:
+          - name: Ingredients
+            given: 
+              - The appetizer section exists
+            when:
+              - You read the recipe
+            then:
+              - Look for the chips and salsa recipe.
+              - Look for tomato as an ingredient.
+              - Look for onion as an ingredient.
+              - Look for jalapeno as an ingredient.
+              - Look for cilantro as an ingredient.
+              - Look for lime as an ingredient.
+              - Look for salt as an ingredient.
+              - Make sure all these are present.
+          - name: Instructions
+            given: 
+              - The appetizer section exists
+            when:
+              - You read the recipe
+            then:
+              - Look for instructions to chop the tomato.
+              - Look for instructions to chop the onion.
+              - Look for instructions to chop the jalapeno.
+              - Look for instructions to chop the cilantro.
+              - Look for instructions to squeeze the lime. 
+              - Make sure all these are present.
+    - name: Eggrolls
+      description: |
+        My favorite Chinese starter recipe.  Includes a brief introduction, a list of ingredients, and preparation instructions.
+      acceptance:
+        name: Eggroll Test
+        scenarios:
+          - name: Ingredients
+            given: 
+              - The appetizer section exists
+            when:
+              - You read the eggroll section
+            then:
+              - Look for cabbage in the ingredients.
+              - Look for eggroll wrappers in the ingredients.
+              - Look for ground pork in the ingredients.
+              - Look for soy sauce in the ingredients.
+              - Look for garlic in the ingredients.
+              - Look for ginger in the ingredients.
+              - Make sure all these are present.
+          - name: Instructions
+            given:
+              - The appetizer section exists.
+            when:
+              - You read the eggroll recipe.
+            then:
+              - Look for instructions to cook the pork.
+              - Look for instructions to thinly slice the cabbage.
+              - Look for instructions to mince the garlic.
+              - Look for instructions to mince the ginger.
+              - Look for instructions to wrap the eggrolls.
+              - Make sure all these are present.

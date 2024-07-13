@@ -1,0 +1,60 @@
+plugin:
+  name: Document Model
+  package: aac_doc_mdl
+  description: |
+    An AI powered plugin for Architecture-as-Code that supports MBSE document development.
+
+    In order to create a document model, simply define an AaC model for the document with the document title as the model name.  Define document content areas as behaviors within the model.  Most importantly, define your expectations for the content as features within the acceptance block of the behavior.  You can define document sections as components which are then modeled in the same way.  Repeat this for sub-sections and so on.
+
+    Once you've established your document model, this plugin provides commands that allow you to generate an annotated outline of the document model or generate a draft of the document using Generative AI based on on the descriptions, requirements, and test specification.
+  commands:
+    - name: gen-doc-outline
+      help_text: |
+        An AI powered command that uses your model definition to generate an annotated outline of the document with abstracts for each section.  The output is a markdown file and a PDF generated from the markdown.
+
+        The structure of the annotated outline is based on your model-component decomposition.  The content for each section abstract is generated using any linked requirements, acceptance test specification, the descriptions provided by the model and if present the description of components.
+        
+        Because this utilizes Generative AI, the output should be carefully reviewed by a human for quality and correctness.  It may also take quite some time to run depending on the number of AI calls required based on your document model.
+      input:
+        - name: title
+          type: string
+          description: |
+            The name of the root document model.
+        - name: architecture-file
+          type: file
+          description: |
+            A path to a YAML file containing an AaC-defined document model to evaluate.
+        - name: --no-pdf
+          type: bool
+          description: |
+            Instructs the plugin to not generate a PDF file, resulting only in a markdown file.
+        - name: --gen-eval
+          type: bool
+          description: |
+            Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.
+        - name: --output
+          type: directory
+          description: The location to output generated document.  Default is current working directory.
+    - name: gen-doc-draft
+      help_text: |
+        An AI powered command that uses your model definition to generate an a draft of the document with content for each section.  The output is a markdown file and a PDF generated from the markdown.
+
+        The structure of the document is based on your model-component decomposition.  The content for each section is generated using any linked requirements, acceptance test specification, the descriptions provided by the model and if present the description of components.
+        
+        Because this utilizes Generative AI, the output should be carefully reviewed by a human for quality and correctness.  It may also take quite some time to run depending on the number of AI calls required based on your document model.
+      input:
+        - name: title
+          type: string
+          description: |
+            The name of the root document model.
+        - name: architecture-file
+          type: file
+          description: |
+            A path to a YAML file containing an AaC-defined document model to evaluate.
+        - name: --no-pdf
+          type: bool
+          description: |
+            Instructs the plugin to not generate a PDF file, resulting only in a markdown file
+        - name: --output
+          type: directory
+          description: The location to output generated document.  Default is current working directory.

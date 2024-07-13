@@ -1,0 +1,31 @@
+import:
+  files:
+    - appetizers.aac
+    - mains.aac
+
+model:
+  name: Top Quality Cooking
+  description: |
+    A cookbook with a variety of recipes from around the world.
+  components:
+    - name: apps
+      model: Appetizers
+    - name: mains
+      model: Mains
+  behavior:
+    - name: Introduction
+      description: |
+        A brief introduction for this cookbook that describes the amazing flavors included from across the globe.
+      acceptance:
+        name: Introduction
+        scenarios:
+          - name: Introduction
+            given:
+              - The cookbook exists
+            when:
+              - You read the cookbook
+            then:
+              - Look for the introduction section
+              - Look for a narrative about amazing food from around the world.
+              - Look for a a brief description of each section in the cookbook.
+              - Make sure all these are present.

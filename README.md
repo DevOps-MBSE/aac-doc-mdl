@@ -1,2 +1,2 @@
-# aac-doc-mdl
+# AaC-Doc-Mdl
 An AI powered plugin for Architecture-as-Code that supports MBSE document development.
