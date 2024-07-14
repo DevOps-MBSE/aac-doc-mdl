@@ -15,7 +15,12 @@ from aac.execute.aac_execution_result import ExecutionResult, ExecutionStatus
 from aac.execute.plugin_runner import PluginRunner
 from aac.in_out.files.aac_file import AaCFile
 
-from aac_doc_mdl.document_model_impl import plugin_name, gen_doc_outline, gen_doc_draft
+from aac_doc_mdl.document_model_impl import (
+    plugin_name,
+    gen_doc_outline,
+    gen_doc_draft,
+    gen_doc_vcrm,
+)
 
 
 document_model_aac_file_name = "document_model.aac"
@@ -101,6 +106,34 @@ def run_gen_doc_draft(
     return result
 
 
+def run_gen_doc_vcrm(
+    title: str, doc_architecture_file: str, output: str, parent_reqs: bool
+) -> ExecutionResult:
+    """
+        Generate a verification cross-reference matrix for you document.  The creates a table with all the requirements as rows, document sections as columns, and an indicator showing the trace from requirement to section.
+
+        Args:
+            title (str): The name of the root document model.
+    doc_architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
+    output (str): The location to output generated document.  Default is current working directory.parent_reqs (bool): Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
+
+       Returns:
+            The results of the execution of the plugin gen-doc-vcrm command.
+    """
+
+    result = ExecutionResult(plugin_name, "gen-doc-vcrm", ExecutionStatus.SUCCESS, [])
+
+    gen_doc_vcrm_result = gen_doc_vcrm(
+        title, doc_architecture_file, output, parent_reqs
+    )
+    if not gen_doc_vcrm_result.is_success():
+        return gen_doc_vcrm_result
+    else:
+        result.add_messages(gen_doc_vcrm_result.messages)
+
+    return result
+
+
 @hookimpl
 def register_plugin() -> None:
     """
@@ -122,5 +155,6 @@ def register_plugin() -> None:
     plugin_runner = PluginRunner(plugin_definition=document_model_plugin_definition)
     plugin_runner.add_command_callback("gen-doc-outline", run_gen_doc_outline)
     plugin_runner.add_command_callback("gen-doc-draft", run_gen_doc_draft)
+    plugin_runner.add_command_callback("gen-doc-vcrm", run_gen_doc_vcrm)
 
     active_context.register_plugin_runner(plugin_runner)

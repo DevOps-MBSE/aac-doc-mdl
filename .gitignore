@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# aac backup and evaluation files
+*.aac_backup
+*.aac_evaluate
+
 # Distribution / packaging
 .Python
 build/

@@ -98,3 +98,32 @@ def gen_doc_draft(
     messages.append(error_msg)
 
     return ExecutionResult(plugin_name, "gen-doc-draft", status, messages)
+
+
+def gen_doc_vcrm(
+    title: str, doc_architecture_file: str, output: str, parent_reqs: bool
+) -> ExecutionResult:
+    """
+        Business logic for allowing gen-doc-vcrm command to perform Generate a verification cross-reference matrix for you document.  The creates a table with all the requirements as rows, document sections as columns, and an indicator showing the trace from requirement to section.
+
+        Args:
+            title (str): The name of the root document model.
+    doc_architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
+    output (str): The location to output generated document.  Default is current working directory.parent_reqs (bool): Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
+
+       Returns:
+            The results of the execution of the gen-doc-vcrm command.
+    """
+
+    # TODO: implement plugin logic here
+    status = ExecutionStatus.GENERAL_FAILURE
+    messages: list[ExecutionMessage] = []
+    error_msg = ExecutionMessage(
+        "The gen-doc-vcrm command for the Document Model plugin has not been implemented yet.",
+        MessageLevel.ERROR,
+        None,
+        None,
+    )
+    messages.append(error_msg)
+
+    return ExecutionResult(plugin_name, "gen-doc-vcrm", status, messages)

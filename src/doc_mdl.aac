@@ -76,3 +76,24 @@ plugin:
           type: number
           description: The temperature passed into the AI text generator.  Default value is 0.2
           default: "0.2"
+    - name: gen-doc-vcrm
+      help_text: |
+        Generate a verification cross-reference matrix for you document.  The creates a table with all the requirements as rows, document sections as columns, and an indicator showing the trace from requirement to section.
+      input:
+        - name: title
+          type: string
+          description: |
+            The name of the root document model.
+        - name: doc-architecture-file
+          type: file
+          description: |
+            A path to a YAML file containing an AaC-defined document model to evaluate.
+        - name: --output
+          type: directory
+          description: The location to output generated document.  Default is current working directory.
+          default: .
+        - name: --parent-reqs
+          type: bool
+          description: Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
+          default: "false"
+        

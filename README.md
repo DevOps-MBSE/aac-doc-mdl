@@ -91,3 +91,32 @@ This is the content for this portion of the modeled document.  Since this is jus
     - You are amazed by the content
     - You are left in a zen like state
 ```
+
+#### gen-doc-vcrm
+
+This command creates a Verification Cross-Reference Matrix (VCRM) for your formal document. Building your VCRM is often difficult and expensive.  By modeling your document, you practically get your VCRM for free.
+
+  - Let's assume I've built my document model, assigned requirements, and written my acceptance tests.
+  - I can then run `aac gen-doc-vcrm` to output the following:
+    - A markdown file containing a VCRM in table form.  The columns are the sections of the document and the rows are the requirements.  There's a `X` in each intersection where a requirement is allocated to a section.  If you don't see a `X` then you've missed a requirement allocation in your model.
+    - A comma-separated values (CSV) file containing a VCRM in table form.  This format is produced because it is easy to pull into Excel or Google Sheets to format for visualization or customer delivery.  The columns are the sections of the document and the rows are the requirements.  There's a `X` in each intersection where a requirement is allocated to a section.  If you don't see a `X` then you've missed a requirement allocation in your model.
+  - If I need to show the full requirement trace for compliance, I can use the `--parent-reqs` CLI flag to have AaC include all requirements from the document spec tree.  Parent reqs will show the same trace in the matrix as child requirements, assuming child requirements are good quality and inclusive of parent requirement intent.
+
+##### Example Output
+
+Markdown
+```markdown
+| Req ID   | Req Text | Section 1 | Section 2 | Section 3 |
+|----|----|----|----|----|
+| REQ-1 | Shall... | X |    |    |
+| REQ-2 | Shall... |    |    | X |
+| REQ-3 | Shall... |    | X |    |
+```
+
+CSV
+```csv
+Req ID, Req Text, Section 1, Section 2, Section 3
+REQ-1, Shall..., X, , 
+REQ-2, Shall..., , , X
+REQ-3, Shall..., , X, 
+```
