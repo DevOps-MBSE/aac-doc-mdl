@@ -25,6 +25,7 @@ def gen_doc_outline(
     architecture_file: str,
     no_pdf: bool,
     gen_eval: bool,
+    parent_reqs: bool,
     output: str,
     temperature: float,
 ) -> ExecutionResult:
@@ -40,7 +41,7 @@ def gen_doc_outline(
     architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
     no_pdf (bool): Instructs the plugin to not generate a PDF file, resulting only in a markdown file.
     gen_eval (bool): Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.  Disabled by default.
-    output (str): The location to output generated document.  Default is current working directory.temperature (float): The temperature passed into the AI text generator.  Default value is 0.1
+    parent_reqs (bool): Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.output (str): The location to output generated document.  Default is current working directory.temperature (float): The temperature passed into the AI text generator.  Default value is 0.1
 
        Returns:
             The results of the execution of the gen-doc-outline command.
@@ -66,6 +67,7 @@ def gen_doc_draft(
     no_pdf: bool,
     output: str,
     content_only: bool,
+    parent_reqs: bool,
     temperature: float,
 ) -> ExecutionResult:
     """
@@ -80,7 +82,7 @@ def gen_doc_draft(
     architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
     no_pdf (bool): Instructs the plugin to not generate a PDF file, resulting only in a markdown file
     output (str): The location to output generated document.  Default is current working directory.content_only (bool): Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.
-    temperature (float): The temperature passed into the AI text generator.  Default value is 0.2
+    parent_reqs (bool): Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.temperature (float): The temperature passed into the AI text generator.  Default value is 0.2
 
        Returns:
             The results of the execution of the gen-doc-draft command.

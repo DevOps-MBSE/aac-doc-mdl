@@ -34,6 +34,10 @@ plugin:
           description: |
             Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.  Disabled by default.
           default: "false"
+        - name: --parent-reqs
+          type: bool
+          description: Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.
+          default: "false"
         - name: --output
           type: directory
           description: The location to output generated document.  Default is current working directory.
@@ -71,6 +75,10 @@ plugin:
           type: bool
           description: |
             Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.
+          default: "false"
+        - name: --parent-reqs
+          type: bool
+          description: Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.
           default: "false"
         - name: --temperature
           type: number
