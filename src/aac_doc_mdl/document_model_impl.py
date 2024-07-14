@@ -21,7 +21,12 @@ plugin_name = "Document Model"
 
 
 def gen_doc_outline(
-    title: str, architecture_file: str, no_pdf: bool, gen_eval: bool, output: str
+    title: str,
+    architecture_file: str,
+    no_pdf: bool,
+    gen_eval: bool,
+    output: str,
+    temperature: float,
 ) -> ExecutionResult:
     """
         Business logic for allowing gen-doc-outline command to perform An AI powered command that uses your model definition to generate an annotated outline of the document with abstracts for each section.  The output is a markdown file and a PDF generated from the markdown.
@@ -34,8 +39,8 @@ def gen_doc_outline(
             title (str): The name of the root document model.
     architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
     no_pdf (bool): Instructs the plugin to not generate a PDF file, resulting only in a markdown file.
-    gen_eval (bool): Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.
-    output (str): The location to output generated document.  Default is current working directory.
+    gen_eval (bool): Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.  Disabled by default.
+    output (str): The location to output generated document.  Default is current working directory.temperature (float): The temperature passed into the AI text generator.  Default value is 0.1
 
        Returns:
             The results of the execution of the gen-doc-outline command.
@@ -56,7 +61,12 @@ def gen_doc_outline(
 
 
 def gen_doc_draft(
-    title: str, architecture_file: str, no_pdf: bool, output: str
+    title: str,
+    architecture_file: str,
+    no_pdf: bool,
+    output: str,
+    content_only: bool,
+    temperature: float,
 ) -> ExecutionResult:
     """
         Business logic for allowing gen-doc-draft command to perform An AI powered command that uses your model definition to generate an a draft of the document with content for each section.  The output is a markdown file and a PDF generated from the markdown.
@@ -69,7 +79,8 @@ def gen_doc_draft(
             title (str): The name of the root document model.
     architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
     no_pdf (bool): Instructs the plugin to not generate a PDF file, resulting only in a markdown file
-    output (str): The location to output generated document.  Default is current working directory.
+    output (str): The location to output generated document.  Default is current working directory.content_only (bool): Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.
+    temperature (float): The temperature passed into the AI text generator.  Default value is 0.2
 
        Returns:
             The results of the execution of the gen-doc-draft command.

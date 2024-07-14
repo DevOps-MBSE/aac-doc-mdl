@@ -28,13 +28,20 @@ plugin:
           type: bool
           description: |
             Instructs the plugin to not generate a PDF file, resulting only in a markdown file.
+          default: "false"
         - name: --gen-eval
           type: bool
           description: |
-            Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.
+            Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.  Disabled by default.
+          default: "false"
         - name: --output
           type: directory
           description: The location to output generated document.  Default is current working directory.
+          default: "."
+        - name: --temperature
+          type: number
+          description: The temperature passed into the AI text generator.  Default value is 0.1
+          default: "0.1"
     - name: gen-doc-draft
       help_text: |
         An AI powered command that uses your model definition to generate an a draft of the document with content for each section.  The output is a markdown file and a PDF generated from the markdown.
@@ -55,6 +62,17 @@ plugin:
           type: bool
           description: |
             Instructs the plugin to not generate a PDF file, resulting only in a markdown file
+          default: "false"
         - name: --output
           type: directory
           description: The location to output generated document.  Default is current working directory.
+          default: .
+        - name: --content-only
+          type: bool
+          description: |
+            Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.
+          default: "false"
+        - name: --temperature
+          type: number
+          description: The temperature passed into the AI text generator.  Default value is 0.2
+          default: "0.2"
