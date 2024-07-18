@@ -47,6 +47,17 @@ def gen_doc_outline(
             The results of the execution of the gen-doc-outline command.
     """
 
+    # Create the outline based on the structure of the model's composition. The model with the title name is the base doc.
+    # Each component is a section in the doc.  Further components are sub-sections, and so on.
+    # It seems that the abstract for a portion of the model should be aware of it's sub-portions so first build the structure
+    # as a hierarchy and then traverse the document structure from the lowest level up to the top.
+
+    # First capture the document structure as a dict with appropriate content captured at each level.  Then generate whatever
+    # content is needed by adding entries to the layers of the dict.  The pass the dict into Jinja to produce the desired output.
+
+    
+
+
     # TODO: implement plugin logic here
     status = ExecutionStatus.GENERAL_FAILURE
     messages: list[ExecutionMessage] = []
