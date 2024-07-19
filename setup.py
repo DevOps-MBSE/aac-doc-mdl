@@ -27,9 +27,16 @@ test_dependencies = [
 setup(
     version="0.0.1",
     name="aac-doc-mdl",
-    packages=find_packages(where=".", exclude="tests"),
+    license="MIT License",
+    url="https://github.com/DevOps-MBSE/AaC-Req-QA",
+    long_description=readme_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     package_data={"": ["*.aac", "*.jinja2", "*.yaml"]},
     install_requires=runtime_dependencies,
+    setup_requires=test_dependencies,
+    tests_require=test_dependencies,
     extras_require={"test": test_dependencies},
     entry_points={
         "aac": ["aac-doc-mdl=aac_doc_mdl"],

@@ -7,68 +7,68 @@ model:
       description: |
         A short introduction to the blog post.
       acceptance:
-        name: Introduction
-        background:
-          given:
-            - The blog exists
-        scenarios:
-          - name: Include her name
-            when:
-              - You read the blog
-            then:
-              - Look for the name Mommy McParentalunit in the content.
-              - Look for the maiden name Mommy McFancyfree and make sure it is not present.
-              - Make sure all these are present.
+        - name: Introduction
+          background:
+            given:
+              - The blog exists
+          scenarios:
+            - name: Include her name
+              when:
+                - You read the blog
+              then:
+                - Look for the name Mommy McParentalunit in the content.
+                - Look for the maiden name Mommy McFancyfree and make sure it is not present.
+                - Make sure all these are present.
     - name: Thanks Mom
       description: |
         A couple paragraphs telling her thanks for all the things she did for me.
       acceptance:
-        name: Thanks
-        background:
-          given:
-            - The blog exists
-        scenarios:
-          - name: Kid Stuff
-            when:
-              - You read the blog
-            then:
-              - Look for thanks for teaching me to ride a bike.
-              - Look for thanks for teaching me to swim.
-              - Look for thanks for helping me with my science fair project.
-              - Make sure all these are present.
-          - name: Young Adult Stuff
+        - name: Thanks
+          background:
             given:
               - The blog exists
-            when:
-              - You read the blog
-            then:
-              - Look for thanks for teaching me to drive.
-              - Look for thanks for helping me with my college applications.
-              - Look for thanks for helping me move into my first apartment.
-              - Make sure all these are present.
+          scenarios:
+            - name: Kid Stuff
+              when:
+                - You read the blog
+              then:
+                - Look for thanks for teaching me to ride a bike.
+                - Look for thanks for teaching me to swim.
+                - Look for thanks for helping me with my science fair project.
+                - Make sure all these are present.
+            - name: Young Adult Stuff
+              given:
+                - The blog exists
+              when:
+                - You read the blog
+              then:
+                - Look for thanks for teaching me to drive.
+                - Look for thanks for helping me with my college applications.
+                - Look for thanks for helping me move into my first apartment.
+                - Make sure all these are present.
     - name: Sorry Mom
       description: |
         A couple paragraphs saying sorry for all the trouble I caused.
       acceptance:
-        name: Sorry
-        scenarios:
-          - name: Kid Stuff
-            given:
-              - The blog exists
-            when:
-              - You read the blog
-            then:
-              - Look for an apology about all the dirty dishes.
-              - Look for an apology about all the times I didn't clean my room.
-              - Look for an apology about all the stains on the furniture and carpet.
-              - Make sure all these are present.
-          - name: Young Adult Stuff
-            given:
-              - The blog exists
-            when:
-              - You read the blog
-            then:
-              - Look for an apology about all the times I didn't call.
-              - Look for an apology about all the times I didn't visit.
-              - Look for an apology about all the times I didn't write.
-              - Make sure all these are present.
+        - name: Sorry
+          scenarios:
+            - name: Kid Stuff
+              given:
+                - The blog exists
+              when:
+                - You read the blog
+              then:
+                - Look for an apology about all the dirty dishes.
+                - Look for an apology about all the times I didn't clean my room.
+                - Look for an apology about all the stains on the furniture and carpet.
+                - Make sure all these are present.
+            - name: Young Adult Stuff
+              given:
+                - The blog exists
+              when:
+                - You read the blog
+              then:
+                - Look for an apology about all the times I didn't call.
+                - Look for an apology about all the times I didn't visit.
+                - Look for an apology about all the times I didn't write.
+                - Make sure all these are present.

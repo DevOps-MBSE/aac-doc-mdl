@@ -3,6 +3,7 @@ import:
     - appetizers.aac
     - mains.aac
 
+--- 
 model:
   name: Top Quality Cooking
   description: |
@@ -17,15 +18,15 @@ model:
       description: |
         A brief introduction for this cookbook that describes the amazing flavors included from across the globe.
       acceptance:
-        name: Introduction
-        scenarios:
-          - name: Introduction
-            given:
-              - The cookbook exists
-            when:
-              - You read the cookbook
-            then:
-              - Look for the introduction section
-              - Look for a narrative about amazing food from around the world.
-              - Look for a a brief description of each section in the cookbook.
-              - Make sure all these are present.
+        - name: Introduction
+          scenarios:
+            - name: Introduction
+              given:
+                - The cookbook exists
+              when:
+                - You read the cookbook
+              then:
+                - Look for the introduction section
+                - Look for a narrative about amazing food from around the world.
+                - Look for a a brief description of each section in the cookbook.
+                - Make sure all these are present.

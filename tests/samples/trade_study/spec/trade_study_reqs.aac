@@ -1,5 +1,5 @@
 req_spec:
-  name: Trade Study Requitements
+  name: Trade Study Requirements
   description: |
     The organization's process requirements for performing a trade study.
   requirements:
@@ -33,9 +33,11 @@ req:
   shall: The trade study shall define the evaluation criteria to be used in evaluating the solution space.
 
 ---
-req: Define criteria scoring
-id: TS-004
-shall: The trade study shall establish scoring definitions for each evaluation criteria as either pass/fail or numeric from 0 to 10 with with unambiguous thresholds.
+req: 
+  name: Define criteria scoring
+  id: TS-004
+  shall: The trade study shall establish scoring definitions for each evaluation criteria as either pass/fail or numeric from 0 to 10 with with unambiguous thresholds.
+
 ---
 req:
   name: Define criteria weights
@@ -70,4 +72,4 @@ req:
 req:
   name: Recommendation
   id: TS-010
-  shall:  The trade study shall recommend the candidate solution with the highest total score.
+  shall: The trade study shall recommend the candidate solution with the highest total score.

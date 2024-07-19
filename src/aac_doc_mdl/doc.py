@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ForwardRef
+from typing import ForwardRef
+from pydantic import BaseModel
 
 from aac.context.language_context import LanguageContext
 
@@ -46,11 +47,14 @@ class Content(BaseModel):
     tests: list[Test]
 
 
+Doc = ForwardRef('Doc')
+
+
 class Doc(BaseModel):
     title: str
     description: str
     abstract: str
-    sections: list[ForwardRef('Doc')]
+    sections: list[Doc] = []
     content: list[Content]
     reqs: list[Req]
 
@@ -62,13 +66,27 @@ def _req_from_id(id) -> Req:
     """Look up a requirement based on the req ID and create the Req."""
     context = LanguageContext()
 
-    for req in context.get_definitions_by_root('req'):
+    for req_def in context.get_definitions_by_root('req'):
+        req = req_def.instance
         if req.id == id:
-            return Req(id, req.shall)
+            return Req(id=id, shall=req.shall)
     
     # just return None if I don't find anything
     print(f"DEBUG: couldn't fine req for id {id}")
     return None
+
+
+def _test_from_scenario(scenario) -> Test:
+    """Buld a test object from a feature in the AaC model."""
+    reqs = []
+    for id in scenario.requirements:
+        reqs.append(_req_from_id(id))
+
+    criteria = []
+    for line in scenario.then:
+        criteria.append(line)
+    test = Test(name=scenario.name, reqs=reqs, criteria=criteria)
+    return test
 
 
 def _content_from_behavior(behavior) -> Content:
@@ -77,11 +95,13 @@ def _content_from_behavior(behavior) -> Content:
     description = behavior.description
     tests = []
 
+    print(f"DEBUG:  working on behavior - {behavior.name} with {len(behavior.acceptance)} acceptance tests")
+    print(f"DEBUG:  dump\n\n{behavior}")
     for feature in behavior.acceptance:
         for scenario in feature.scenarios:
-            tests = scenario.then
-
-    return Content(heading, description, tests)
+            tests.append(_test_from_scenario(scenario))
+    print(f"DEBUG:  creating content - {heading}, {description}, {tests}")
+    return Content(heading=heading, description=description, tests=tests)
 
 
 def doc_from_model(model) -> Doc:
@@ -97,11 +117,11 @@ def doc_from_model(model) -> Doc:
 
     # populate sections
     for comp in model.components:
-        models = context.get_definitions_by_name(comp.name)
-        if len(models) != 1:
+        model_defs = context.get_definitions_by_name(comp.name)
+        if len(model_defs) != 1:
             print(f"ERROR - must be only 1 model with name {comp.name}")
         else:
-            sections.append(doc_from_model(models[0]))
+            sections.append(doc_from_model(model_defs[0].instance))
 
     # populate requirements
     for model_req in model.requirements:
@@ -110,7 +130,7 @@ def doc_from_model(model) -> Doc:
             reqs.append(req)
 
     # populate content
-    for behavior in model.behaviors:
-        content.append(_content_from_behavior(behavior))
+    for entry in model.behavior:
+        content.append(_content_from_behavior(entry))
 
-    return Doc(title, description, abstract, sections, content, reqs)
+    return Doc(title=title, description=description, abstract=abstract, sections=sections, content=content, reqs=reqs)

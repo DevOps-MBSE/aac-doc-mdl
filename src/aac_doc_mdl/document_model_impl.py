@@ -15,9 +15,26 @@ from aac.execute.aac_execution_result import (
     ExecutionMessage,
     MessageLevel,
 )
-from aac.in_out.files.aac_file import AaCFile
+
+from aac_doc_mdl.doc import Doc, doc_from_model
+from aac_doc_mdl.doc_prompts import create_abstract_prompt, create_document_prompt
 
 plugin_name = "Document Model"
+
+
+def _get_model_definition_with_name(title: str, architecture_file: str):
+
+    context = LanguageContext()
+
+    definitions = context.parse_and_load(architecture_file)
+
+    for definition in definitions:
+        if definition.get_root_key() == "model" and definition.instance.name == title:
+            # This is the document model
+            return definition
+
+    print(f"DEBUG: Cannot find model with name {title} in {[definition.instance.name for definition in definitions if definition.get_root_key() == 'model']}")
+    return None
 
 
 def gen_doc_outline(
@@ -47,29 +64,36 @@ def gen_doc_outline(
             The results of the execution of the gen-doc-outline command.
     """
 
-    # Create the outline based on the structure of the model's composition. The model with the title name is the base doc.
-    # Each component is a section in the doc.  Further components are sub-sections, and so on.
-    # It seems that the abstract for a portion of the model should be aware of it's sub-portions so first build the structure
-    # as a hierarchy and then traverse the document structure from the lowest level up to the top.
+    definition = _get_model_definition_with_name(title, architecture_file)
+    if definition is None:
+        status = ExecutionStatus.GENERAL_FAILURE
+        messages: list[ExecutionMessage] = []
+        error_msg = ExecutionMessage(
+            f"Unable to locate a document model with name/title {title} in {architecture_file}.",
+            MessageLevel.ERROR,
+            None,
+            None,
+        )
+        messages.append(error_msg)
+        return ExecutionResult(plugin_name, "gen-doc-outline", status, messages)
 
-    # First capture the document structure as a dict with appropriate content captured at each level.  Then generate whatever
-    # content is needed by adding entries to the layers of the dict.  The pass the dict into Jinja to produce the desired output.
+    doc: Doc = doc_from_model(definition.instance)
+    prompt = create_abstract_prompt(doc)
+    print(f"DEBUG:  AI prompt = \n\n {prompt}")
 
-    
-
-
-    # TODO: implement plugin logic here
-    status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[ExecutionMessage] = []
-    error_msg = ExecutionMessage(
-        "The gen-doc-outline command for the Document Model plugin has not been implemented yet.",
-        MessageLevel.ERROR,
-        None,
-        None,
+    return ExecutionResult(
+        plugin_name,
+        "gen-doc-outline",
+        ExecutionStatus.SUCCESS,
+        [
+            ExecutionMessage(
+                "Generated: an abstract",
+                MessageLevel.INFO,
+                definition.source,
+                None,
+            )
+        ],
     )
-    messages.append(error_msg)
-
-    return ExecutionResult(plugin_name, "gen-doc-outline", status, messages)
 
 
 def gen_doc_draft(
@@ -99,18 +123,36 @@ def gen_doc_draft(
             The results of the execution of the gen-doc-draft command.
     """
 
-    # TODO: implement plugin logic here
-    status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[ExecutionMessage] = []
-    error_msg = ExecutionMessage(
-        "The gen-doc-draft command for the Document Model plugin has not been implemented yet.",
-        MessageLevel.ERROR,
-        None,
-        None,
-    )
-    messages.append(error_msg)
+    definition = _get_model_definition_with_name(title, architecture_file)
+    if definition is None:
+        status = ExecutionStatus.GENERAL_FAILURE
+        messages: list[ExecutionMessage] = []
+        error_msg = ExecutionMessage(
+            f"Unable to locate a document model with name/title {title} in {architecture_file}.",
+            MessageLevel.ERROR,
+            None,
+            None,
+        )
+        messages.append(error_msg)
+        return ExecutionResult(plugin_name, "gen-doc-outline", status, messages)
 
-    return ExecutionResult(plugin_name, "gen-doc-draft", status, messages)
+    doc: Doc = doc_from_model(definition.instance)
+    prompt = create_document_prompt(doc)
+    print(f"DEBUG:  AI prompt = \n\n {prompt}")
+
+    return ExecutionResult(
+        plugin_name,
+        "gen-doc-outline",
+        ExecutionStatus.SUCCESS,
+        [
+            ExecutionMessage(
+                "Generated: an abstract",
+                MessageLevel.INFO,
+                definition.source,
+                None,
+            )
+        ],
+    )
 
 
 def gen_doc_vcrm(

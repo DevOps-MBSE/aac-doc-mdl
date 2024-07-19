@@ -104,4 +104,3 @@ plugin:
           type: bool
           description: Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
           default: "false"
-        

@@ -7,57 +7,57 @@ model:
       description: |
         My favorite Mexican dish.  Includes a brief introduction, a list of ingredients, and preparation instructions.
       acceptance:
-        name: Taco Test
-        scenarios:
-          - name: Ingredients
-            given: 
-              - The main course section exists
-            when:
-              - You read the taco recipe
-            then:
-              - Look for vegetables used in street tacos as an ingredient.
-              - Look for everything needed to make authentic spicy pork as an ingredient.
-              - Look for corn tortillas as an ingredient.
-              - Look for ingredients needed to make a red taco sauce.
-              - Make sure all these are present.
-          - name: Instructions
-            given: 
-              - The main course section exists
-            when:
-              - You read the taco recipe
-            then:
-              - Look for instructions to make the spicy pork filling.
-              - Look for instructions to prepare the vegetables.
-              - Look for instructions to toast the tortilla on the griddle.
-              - Look for instructions to assemble the taco.
-              - Look for instructions to squeeze the lime.
-              - Look for instructions to add the red taco sauce.
-              - Make sure all these are present.
+        - name: Taco Test
+          scenarios:
+            - name: Ingredients
+              given: 
+                - The main course section exists
+              when:
+                - You read the taco recipe
+              then:
+                - Look for vegetables used in street tacos as an ingredient.
+                - Look for everything needed to make authentic spicy pork as an ingredient.
+                - Look for corn tortillas as an ingredient.
+                - Look for ingredients needed to make a red taco sauce.
+                - Make sure all these are present.
+            - name: Instructions
+              given: 
+                - The main course section exists
+              when:
+                - You read the taco recipe
+              then:
+                - Look for instructions to make the spicy pork filling.
+                - Look for instructions to prepare the vegetables.
+                - Look for instructions to toast the tortilla on the griddle.
+                - Look for instructions to assemble the taco.
+                - Look for instructions to squeeze the lime.
+                - Look for instructions to add the red taco sauce.
+                - Make sure all these are present.
     - name: Spaghetti
       description: |
         My favorite Italian main course recipe.  Includes a brief introduction, a list of ingredients, and preparation instructions.
       acceptance:
-        name: Spaghetti Test
-        scenarios:
-          - name: Ingredients
-            given: 
-              - The main course section exists
-            when:
-              - You read the spaghetti recipe
-            then:
-              - Look for authentic Italian ingredients.
-              - Look for both ground beef and ground pork in the ingredients.
-              - Look for garlic in the ingredients.
-              - Make sure all these are present.
-          - name: Instructions
-            given:
-              - The main course section exists.
-            when:
-              - You read the spaghetti recipe.
-            then:
-              - Look for instructions to cook the meat.
-              - Look for instructions to prepare the vegetables.
-              - Look for instructions to make the sauce.
-              - Look for instructions to cook the pasta.
-              - Look for instructions to assemble the plate.
-              - Make sure all these are present.
+        - name: Spaghetti Test
+          scenarios:
+            - name: Ingredients
+              given: 
+                - The main course section exists
+              when:
+                - You read the spaghetti recipe
+              then:
+                - Look for authentic Italian ingredients.
+                - Look for both ground beef and ground pork in the ingredients.
+                - Look for garlic in the ingredients.
+                - Make sure all these are present.
+            - name: Instructions
+              given:
+                - The main course section exists.
+              when:
+                - You read the spaghetti recipe.
+              then:
+                - Look for instructions to cook the meat.
+                - Look for instructions to prepare the vegetables.
+                - Look for instructions to make the sauce.
+                - Look for instructions to cook the pasta.
+                - Look for instructions to assemble the plate.
+                - Make sure all these are present.
