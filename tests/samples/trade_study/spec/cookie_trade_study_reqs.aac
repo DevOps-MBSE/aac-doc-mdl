@@ -1,3 +1,8 @@
+import:
+  files:
+    - ./documentation_reqs.aac
+
+---
 req_spec:
   name: The Great Cookie Debate
   description: |
@@ -23,6 +28,8 @@ req:
   name: Markdown File
   id: GCD-001
   shall:  The cookie trade study shall be documented using the markdown file format.
+  parents:
+    - DOC-002
 
 ---
 req:

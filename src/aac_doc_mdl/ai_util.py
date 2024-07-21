@@ -108,7 +108,8 @@ def generate(client, model, temp, prompt):
     Returns:
         The generated AI response.
     """
-    response = "AI response goes here"
+    # response = "AI response goes here"
+    # return response
     r = client.chat.completions.create(
         messages=[{"role": "user", "content": prompt}],
         model=model,

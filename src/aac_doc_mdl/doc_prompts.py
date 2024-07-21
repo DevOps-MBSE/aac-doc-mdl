@@ -1,4 +1,6 @@
 """The AaC Documentation Model plugin AI document generation AI prompt implementation."""
+import os
+from jinja2 import Environment, FileSystemLoader
 
 from aac_doc_mdl.doc import Doc
 
@@ -21,7 +23,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 # OUTPUT INSTRUCTIONS
 
-- Output only markdown code.
+- Output only markdown formatted content as the body of your response.  Be sure to use correct formatting for headings, lists, etc.
 
 - Ensure the abstract meets all stakeholder needs as defined in the description, requirements, and criteria provided.
 
@@ -65,43 +67,21 @@ Take a deep breath and think step by step about how to best accomplish this goal
 - You are not constrained on length unless there are specific requirements or criteria on content length from the stakeholder. Find the right balance between concise and complete language, favoring completeness to ensure all requirements and criteria are met.
 
 # INPUT:
-
 """
 
 
 def _create_prompt(prompt_starter: str, doc: Doc) -> str:
-    """Create a GenAI prompt to produce a tailored document from a model."""
-    input = f"Title: {doc.title}\n"
-    input += f"Description:  {doc.description}\n"
-    if len(doc.reqs) > 0:
-        input += "Requirements:\n"
-        for req in doc.reqs:
-            input += f"  - {req.id}: {req.shall}\n"
-    if len(doc.sections) > 0:
-        input += "Sub-sections:\n"
-        for sect in doc.sections:
-            input += f"  - {sect.title}: {sect.description}\n"
-    if len(doc.content) > 0:
-        input += "Content:\n"
-        for content in doc.content:
-            input += f"  - {content.heading}: {content.description}\n"
-            if len(content.tests) > 0:
-                input += "    Expectations:\n"
-                for test in content.tests:
-                    input += f"      - {test.name}\n"
-                    if len(test.reqs) > 0:
-                        input += "        Requirements:\n"
-                        for req in test.reqs:
-                            input += f"          - {req.id}:  {req.shall}\n"
-                    if len(test.criteria) > 0:
-                        input += "        Criteria:\n"
-                        for criteria in test.criteria:
-                            input += f"          - {criteria}\n\n"
+    """Create an ai prompt using the jinja template."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(current_dir))
+    # env.globals.update({})
+    jinja_template = env.get_template("./prompt_template.jinja2")
+    input = jinja_template.render(doc.model_dump())
 
-    return f"{prompt_starter}\n{input}"
+    return f"{prompt_starter}{input}"
 
 
-def create_abstract_prompt(doc: Doc) -> str:
+def create_outline_prompt(doc: Doc) -> str:
     """Create an AI prompt to generate an abstract from a document model."""
     return _create_prompt(ABSTRACT_PROMPT_TEMPLATE, doc)
 

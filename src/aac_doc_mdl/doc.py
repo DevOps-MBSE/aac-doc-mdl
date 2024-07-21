@@ -1,7 +1,15 @@
 from typing import ForwardRef
 from pydantic import BaseModel
 
+import os
+import json
+from jinja2 import Environment, FileSystemLoader
+from markdown2 import markdown
+from weasyprint import HTML
+
 from aac.context.language_context import LanguageContext
+
+from aac_doc_mdl.ai_util import generate
 
 # The doc dict keys will be:
 #  - title (str):  The title of the section taken from the model name.
@@ -53,7 +61,8 @@ Doc = ForwardRef('Doc')
 class Doc(BaseModel):
     title: str
     description: str
-    abstract: str
+    generated: str
+    output: str
     sections: list[Doc] = []
     content: list[Content]
     reqs: list[Req]
@@ -62,25 +71,37 @@ class Doc(BaseModel):
 Doc.model_rebuild()
 
 
-def _req_from_id(id) -> Req:
+def _req_from_id(id, parent_reqs) -> list[Req]:
     """Look up a requirement based on the req ID and create the Req."""
     context = LanguageContext()
 
-    for req_def in context.get_definitions_by_root('req'):
+    all_reqs = context.get_definitions_by_root('req')
+    print(f"All reqs = {[req.instance.id for req in all_reqs]}")
+    for req_def in all_reqs:
         req = req_def.instance
         if req.id == id:
-            return Req(id=id, shall=req.shall)
-    
-    # just return None if I don't find anything
+            if not parent_reqs:
+                return [Req(id=id, shall=req.shall)]
+            else:
+                print(f"DEBUG:  id {id} looking for parent reqs {req.parents}")
+                if len(req.parents) == 0:
+                    return [Req(id=id, shall=req.shall)]
+                else:
+                    ret_val = [Req(id=id, shall=req.shall)]
+                    for parent_id in req.parents:
+                        ret_val.extend(_req_from_id(parent_id, parent_reqs))
+                    return ret_val
+
+    # just return empty list if I don't find anything
     print(f"DEBUG: couldn't fine req for id {id}")
-    return None
+    return []
 
 
-def _test_from_scenario(scenario) -> Test:
+def _test_from_scenario(scenario, parent_reqs) -> Test:
     """Buld a test object from a feature in the AaC model."""
     reqs = []
     for id in scenario.requirements:
-        reqs.append(_req_from_id(id))
+        reqs.extend(_req_from_id(id, parent_reqs))
 
     criteria = []
     for line in scenario.then:
@@ -89,48 +110,140 @@ def _test_from_scenario(scenario) -> Test:
     return test
 
 
-def _content_from_behavior(behavior) -> Content:
+def _content_from_behavior(behavior, parent_reqs) -> Content:
     """Create a Content from an AaC behavior."""
     heading = behavior.name
     description = behavior.description
     tests = []
 
-    print(f"DEBUG:  working on behavior - {behavior.name} with {len(behavior.acceptance)} acceptance tests")
-    print(f"DEBUG:  dump\n\n{behavior}")
     for feature in behavior.acceptance:
         for scenario in feature.scenarios:
-            tests.append(_test_from_scenario(scenario))
-    print(f"DEBUG:  creating content - {heading}, {description}, {tests}")
+            tests.append(_test_from_scenario(scenario, parent_reqs))
     return Content(heading=heading, description=description, tests=tests)
 
 
-def doc_from_model(model) -> Doc:
+def _add_markdown_indent(md: str, indent: int) -> str:
+    if indent > 0:
+        lines = md.split("\n")
+        update = ""
+        for line in lines:
+            if line.strip().startswith("#"):
+                update = update + "#" * indent + line + "\n"
+            else:
+                update = update + line + "\n"
+        # print(f"DEBUG: _add_markdown_indent\ninput: {md}\noutput: {update}")
+        return update
+    return md
+
+
+def _add_block_quote(md: str) -> str:
+    lines = md.split("\n")
+    return "\n".join(["> " + line for line in lines])
+
+
+def _create_markdown_content(include_eng: bool, indent: int, doc: Doc) -> str:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(current_dir))
+    jinja_main_template = env.get_template("./output_template_main.jinja2")
+    main_markdown_text = jinja_main_template.render(doc.model_dump())
+    # print(f"DEBUG: main_markdown_text\n{main_markdown_text}")
+    eng_markdown_text = ""
+    if indent > 0:
+        main_markdown_text = _add_markdown_indent(main_markdown_text, indent)
+    if include_eng:
+        jinja_eng_template = env.get_template("./output_template_eng.jinja2")
+        eng_markdown_text = jinja_eng_template.render(doc.model_dump())
+        if indent > 0:
+            eng_markdown_text = _add_markdown_indent(eng_markdown_text, indent)
+        eng_markdown_text = _add_block_quote(eng_markdown_text)
+
+    return f"{main_markdown_text}\n{eng_markdown_text}"
+
+
+def doc_from_model(aac_model, ai_prompt_func, ai_client, ai_model, include_eng, parent_reqs, temperature, indent) -> Doc:
     """Create a Doc from an AaC model."""
-    title = model.name
-    description = model.description
-    abstract = ""
+    title = aac_model.name
+    description = aac_model.description
     sections = []
     content = []
     reqs = []
 
     context = LanguageContext()
 
+    print(f"DEBUG: building document - {title}")
+
     # populate sections
-    for comp in model.components:
-        model_defs = context.get_definitions_by_name(comp.name)
+    for comp in aac_model.components:
+        model_defs = context.get_definitions_by_name(comp.model)
         if len(model_defs) != 1:
-            print(f"ERROR - must be only 1 model with name {comp.name}")
+            print(f"ERROR - must be 1 model with name {comp.name}")
         else:
-            sections.append(doc_from_model(model_defs[0].instance))
+            sections.append(doc_from_model(model_defs[0].instance, ai_prompt_func, ai_client, ai_model, include_eng, parent_reqs, temperature, indent + 1))
 
     # populate requirements
-    for model_req in model.requirements:
-        req = _req_from_id(model_req)
-        if req:
-            reqs.append(req)
+    for model_req in aac_model.requirements:
+        req = _req_from_id(model_req, parent_reqs)
+        if len(req):
+            reqs.extend(req)
 
     # populate content
-    for entry in model.behavior:
-        content.append(_content_from_behavior(entry))
+    for entry in aac_model.behavior:
+        content.append(_content_from_behavior(entry, parent_reqs))
 
-    return Doc(title=title, description=description, abstract=abstract, sections=sections, content=content, reqs=reqs)
+    doc = Doc(title=title, description=description, generated="", output="", sections=sections, content=content, reqs=reqs)
+
+    prompt = ai_prompt_func(doc)
+    # print(f"DEBUG:  prompt\n{prompt}\n\n")
+    ai_output = generate(ai_client, ai_model, temperature, prompt).strip()
+    if ai_output.startswith("```markdown"):
+        text_to_replace = "```markdown\n"
+        ai_output = ai_output.replace(text_to_replace, "", 1)
+        index = ai_output.rfind("```")
+        ai_output = ai_output[:index]
+
+    doc.generated = ai_output
+
+    doc.output = _create_markdown_content(include_eng, indent, doc)
+
+    print(f"DEBUG: created document object\n{json.dumps(doc.model_dump(), indent=4)}")
+
+    return doc
+
+
+def _get_markdown_text(doc: Doc) -> str:
+
+    # recursively walk the document sections
+    markdown_text = doc.output + "\n"
+    if doc.sections:
+        for section in doc.sections:
+            markdown_text = markdown_text + _get_markdown_text(section) + "\n"
+
+    return markdown_text
+
+
+def _write_files(path: str, file_name: str, write_pdf: bool, doc: Doc):
+    """Create an ai prompt using the jinja template."""
+    markdown_text = _get_markdown_text(doc)
+
+    print(f"DEBUG: markdown_text - \n {markdown_text}")
+
+    md_file_path = os.path.join(path, file_name + ".md")
+    with open(md_file_path, "w") as file:
+        file.write(markdown_text)
+        print(f"DEBUG: markdown generated: {md_file_path}")
+
+    if write_pdf:
+        # Convert Markdown to HTML
+        html_content = markdown(markdown_text, extras=["fenced-code-blocks"])
+
+        # Define the PDF file path
+        pdf_file_path = os.path.join(path, file_name + ".pdf")
+
+        # Convert HTML to PDF
+        HTML(string=html_content, base_url=path).write_pdf(pdf_file_path)
+
+        print(f"DEBUG: PDF generated: {pdf_file_path}")
+
+
+def write_doc(path: str, file_name: str, doc: Doc, write_pdf: bool):
+    _write_files(path, file_name, write_pdf, doc)

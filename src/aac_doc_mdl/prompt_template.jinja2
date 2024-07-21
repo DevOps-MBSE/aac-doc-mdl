@@ -1,0 +1,18 @@
+Title: {{ title }}
+Description: {{ description }}
+{% if reqs %}Requirements:
+{% for req in reqs %}  - {{ req.id }} : {{ req.shall }}
+{% endfor %}{% endif %}
+{% if sections %}Sub-Sections:
+{% for section in sections %}  - {{ section.title }} : {{ section.description }}
+{% endfor %}{% endif %}
+{% if content %}Content:
+{% for entry in content %}  - {{ entry.heading }} : {{ entry.description }}
+{% if entry.tests %}Expectations:
+{% for test in entry.tests %}    - {{ test.name }}
+{% if test.reqs %}      Requirements:
+{% for test_req in test.reqs %}        - {{ test_req.id }} : {{ test_req.shall }}
+{% endfor %}{% endif %}
+{% if test.criteria %}      Criteria:
+{% for criteria in test.criteria %}        - {{ criteria }}
+{% endfor %}{% endif %}{% endfor %}{% endif %}{% endfor %}{% endif %}

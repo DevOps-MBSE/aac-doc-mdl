@@ -15,7 +15,7 @@ model:
     - name: intro
       model: Introduction
     - name: approach
-      model: Evaluation Approach
+      model: EvaluationApproach
     - name: evaluation
       model: Evaluation
     - name: result

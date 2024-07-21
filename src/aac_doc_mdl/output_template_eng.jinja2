@@ -1,0 +1,21 @@
+{% if reqs %}## Requirements:
+{% set keys = reqs[0].keys() %}
+| {{ keys | join(' | ') }} |
+{% for _ in keys %}|---{% endfor %}|
+{% for item in reqs %}| {{ item.values() | map('string') | join(' | ') }} |
+{% endfor %}{% endif %}
+
+{% if content %}## Test Specification:
+{% for entry in content %}### {{ entry.heading }}
+{{ entry.description }}{% if entry.tests %}
+{% for test in entry.tests %}#### {{ test.name }}
+{% if test.reqs %}##### Test Requirements:
+{% set keys = test.reqs[0].keys() %}
+| {{ keys | join(' | ') }} |
+{% for _ in keys %}|---{% endfor %}|
+{% for item in test.reqs %}| {{ item.values() | map('string') | join(' | ') }} |
+{% endfor %}{% endif %}
+{% if test.criteria %}##### Test Criteria:
+{% for criteria in test.criteria %}- {{ criteria }}
+{% endfor %}
+{% endif %}{% endfor %}{% endif %}{% endfor %}{% endif %}

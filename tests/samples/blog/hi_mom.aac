@@ -21,7 +21,7 @@ model:
                 - Make sure all these are present.
     - name: Thanks Mom
       description: |
-        A couple paragraphs telling her thanks for all the things she did for me.
+        Write a couple paragraphs telling mom thanks for all the things she did for me.
       acceptance:
         - name: Thanks
           background:
@@ -48,7 +48,7 @@ model:
                 - Make sure all these are present.
     - name: Sorry Mom
       description: |
-        A couple paragraphs saying sorry for all the trouble I caused.
+        Write a couple paragraphs saying sorry to mom for all the trouble I caused.
       acceptance:
         - name: Sorry
           scenarios:

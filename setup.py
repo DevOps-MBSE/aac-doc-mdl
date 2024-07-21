@@ -11,7 +11,8 @@ with open("README.md", "r") as fh:
 runtime_dependencies = [
     "aac ~= 0.4.11",
     "openai ~= 1.30.5",
-    "pydantic ~= 2.8.2"
+    "pydantic ~= 2.8.2",
+    "jinja2 ~= 3.1.4"
 ]
 
 test_dependencies = [

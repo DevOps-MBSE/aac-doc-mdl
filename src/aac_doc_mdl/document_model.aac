@@ -10,11 +10,7 @@ plugin:
   commands:
     - name: gen-doc-outline
       help_text: |
-        An AI powered command that uses your model definition to generate an annotated outline of the document with abstracts for each section.  The output is a markdown file and a PDF generated from the markdown.
-
-        The structure of the annotated outline is based on your model-component decomposition.  The content for each section abstract is generated using any linked requirements, acceptance test specification, the descriptions provided by the model and if present the description of components.
-        
-        Because this utilizes Generative AI, the output should be carefully reviewed by a human for quality and correctness.  It may also take quite some time to run depending on the number of AI calls required based on your document model.
+        An AI powered command that uses your document model to generate an annotated outline.  The output is a markdown file and a PDF generated from the markdown.
       input:
         - name: title
           type: string
@@ -33,11 +29,11 @@ plugin:
           type: bool
           description: |
             Instructs the plugin to generate an evaluation model where descriptions are replaced with AI generated abstracts.  Disabled by default.
-          default: "false"
+          default: False
         - name: --parent-reqs
           type: bool
           description: Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.
-          default: "false"
+          default: False
         - name: --output
           type: directory
           description: The location to output generated document.  Default is current working directory.
@@ -48,11 +44,7 @@ plugin:
           default: "0.1"
     - name: gen-doc-draft
       help_text: |
-        An AI powered command that uses your model definition to generate an a draft of the document with content for each section.  The output is a markdown file and a PDF generated from the markdown.
-
-        The structure of the document is based on your model-component decomposition.  The content for each section is generated using any linked requirements, acceptance test specification, the descriptions provided by the model and if present the description of components.
-        
-        Because this utilizes Generative AI, the output should be carefully reviewed by a human for quality and correctness.  It may also take quite some time to run depending on the number of AI calls required based on your document model.
+        An AI powered command that uses your document model to generate an a draft with content for each section.  The output is a markdown file and a PDF generated from the markdown.
       input:
         - name: title
           type: string
@@ -66,7 +58,7 @@ plugin:
           type: bool
           description: |
             Instructs the plugin to not generate a PDF file, resulting only in a markdown file
-          default: "false"
+          default: False
         - name: --output
           type: directory
           description: The location to output generated document.  Default is current working directory.
@@ -74,12 +66,12 @@ plugin:
         - name: --content-only
           type: bool
           description: |
-            Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.
-          default: "false"
+            Instructs the plugin to only produce document content, eliminating additional data such as requirements and test information.  Default is false.
+          default: False
         - name: --parent-reqs
           type: bool
           description: Tells AaC to include parent requirements from your spec in the metadata output.  Default does not include parent requirements.
-          default: "false"
+          default: False
         - name: --temperature
           type: number
           description: The temperature passed into the AI text generator.  Default value is 0.2
