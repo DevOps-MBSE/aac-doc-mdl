@@ -99,7 +99,7 @@ def gen_doc_outline(
 
     doc: Doc = doc_from_model(definition.instance, create_outline_prompt, client, model, True, parent_reqs, temperature, 0)
 
-    write_doc(output, _get_filename_from_path(architecture_file), doc, not no_pdf)
+    write_doc(output, f"{_get_filename_from_path(architecture_file)}-outline", doc, not no_pdf)
 
     return ExecutionResult(
         plugin_name,
@@ -154,19 +154,23 @@ def gen_doc_draft(
             None,
         )
         messages.append(error_msg)
-        return ExecutionResult(plugin_name, "gen-doc-outline", status, messages)
+        return ExecutionResult(plugin_name, "gen-doc-draft", status, messages)
 
-    doc: Doc = doc_from_model(definition.instance)
-    prompt = create_document_prompt(doc)
-    # print(f"DEBUG:  AI prompt = \n\n {prompt}")
+    client, model, client_error, error_result = get_client(plugin_name)
+    if client_error:
+        return error_result
+
+    doc: Doc = doc_from_model(definition.instance, create_document_prompt, client, model, True, parent_reqs, temperature, 0)
+
+    write_doc(output, f"{_get_filename_from_path(architecture_file)}-draft", doc, not no_pdf)
 
     return ExecutionResult(
         plugin_name,
-        "gen-doc-outline",
+        "gen-doc-draft",
         ExecutionStatus.SUCCESS,
         [
             ExecutionMessage(
-                "Generated: an abstract",
+                "Generated: a draft document from a model",
                 MessageLevel.INFO,
                 definition.source,
                 None,
