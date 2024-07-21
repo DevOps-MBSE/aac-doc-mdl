@@ -16,7 +16,7 @@ from aac.execute.aac_execution_result import (
 )
 
 from aac_doc_mdl.ai_util import get_client
-from aac_doc_mdl.doc import Doc, doc_from_model, write_doc
+from aac_doc_mdl.doc import Doc, doc_from_model, write_doc, vcrm_from_model, vcrm_to_csv, vcrm_to_markdown, has_full_coverage
 from aac_doc_mdl.doc_prompts import create_outline_prompt, create_document_prompt
 
 plugin_name = "Document Model"
@@ -187,22 +187,55 @@ def gen_doc_vcrm(
 
         Args:
             title (str): The name of the root document model.
-    doc_architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
-    output (str): The location to output generated document.  Default is current working directory.parent_reqs (bool): Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
+            doc_architecture_file (str): A path to a YAML file containing an AaC-defined document model to evaluate.
+            output (str): The location to output generated document.  Default is current working directory.
+            parent_reqs (bool): Tells AaC to include parent requirements from your spec in the VCRM output.  Default does not include parent requirements.
 
        Returns:
             The results of the execution of the gen-doc-vcrm command.
     """
 
-    # TODO: implement plugin logic here
-    status = ExecutionStatus.GENERAL_FAILURE
-    messages: list[ExecutionMessage] = []
-    error_msg = ExecutionMessage(
-        "The gen-doc-vcrm command for the Document Model plugin has not been implemented yet.",
-        MessageLevel.ERROR,
-        None,
-        None,
-    )
-    messages.append(error_msg)
+    definition = _get_model_definition_with_name(title, doc_architecture_file)
+    if definition is None:
+        status = ExecutionStatus.GENERAL_FAILURE
+        messages: list[ExecutionMessage] = []
+        error_msg = ExecutionMessage(
+            f"Unable to locate a document model with name/title {title} in {doc_architecture_file}.",
+            MessageLevel.ERROR,
+            None,
+            None,
+        )
+        messages.append(error_msg)
+        return ExecutionResult(plugin_name, "gen-doc-vcrm", status, messages)
 
-    return ExecutionResult(plugin_name, "gen-doc-vcrm", status, messages)
+    vcrm = vcrm_from_model(definition.instance, parent_reqs)
+
+    arch_file_name = _get_filename_from_path(doc_architecture_file)
+    vcrm_to_csv(vcrm, f"{os.path.join(output, arch_file_name)}-vcrm.csv")
+    vcrm_to_markdown(vcrm, f"{os.path.join(output, arch_file_name)}-vcrm.md")
+
+    if has_full_coverage(vcrm):
+        return ExecutionResult(
+            plugin_name,
+            "gen-doc-vcrm",
+            ExecutionStatus.SUCCESS,
+            [
+                ExecutionMessage(
+                    f"Generated: a vcrm outputs from the document model {doc_architecture_file}",
+                    MessageLevel.INFO,
+                    definition.source,
+                    None,
+                )
+            ],
+        )
+    else:
+        status = ExecutionStatus.GENERAL_FAILURE
+        messages: list[ExecutionMessage] = []
+        error_msg = ExecutionMessage(
+            f"VCRM for {title} resulted in an incomplete trace.",
+            MessageLevel.ERROR,
+            definition.source,
+            None,
+        )
+        messages.append(error_msg)
+        return ExecutionResult(plugin_name, "gen-doc-vcrm", status, messages)

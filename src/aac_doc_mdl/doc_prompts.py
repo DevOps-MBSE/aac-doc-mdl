@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from aac_doc_mdl.doc import Doc
 
+
 ABSTRACT_PROMPT_TEMPLATE = """
 # IDENTITY and PURPOSE
 
@@ -15,6 +16,10 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 - Fully digest the content description and requirements provided, recognize any embedded stakeholder instructions, and write a draft abstract of the content on a virtual whiteboard in your mind.
 
+- Your abstract must include a description of the necessary document content to that an author could use your abstract as a writing prompt.
+
+- Your abstract must include a listing of all the key points and critical messages for the document.
+
 - If subsection descriptions are provided, adjust the draft abstract in your mind to acknowledge this content but do not include any details in your abstract as that will be provided separately.  Your goal is to recognize the subsection to support a high quality abstract without duplicating the abstract that will follow for that specific content.
 
 - Review the stakeholder criteria for the content and adapt your draft abstract to ensure all expectations are fully covered.  It is crucial that the abstract addresses all criteria.
@@ -23,7 +28,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 # OUTPUT INSTRUCTIONS
 
-- Output only markdown formatted content as the body of your response.  Be sure to use correct formatting for headings, lists, etc.
+- Output only properly markdown formatted content as the body of your response.  Be sure to use correct formatting for headings, lists, etc.
 
 - Ensure the abstract meets all stakeholder needs as defined in the description, requirements, and criteria provided.
 

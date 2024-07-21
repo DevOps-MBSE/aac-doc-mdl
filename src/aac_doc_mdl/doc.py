@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 import os
 import json
+import csv
 from jinja2 import Environment, FileSystemLoader
 from markdown2 import markdown
 from weasyprint import HTML
@@ -68,6 +69,16 @@ class Doc(BaseModel):
     reqs: list[Req]
 
 
+class VcrmTrace(BaseModel):
+    title: str
+    req_ids: list[str]
+
+
+class VCRM(BaseModel):
+    all_reqs: list[Req]
+    traces: list[VcrmTrace]
+
+
 Doc.model_rebuild()
 
 
@@ -76,7 +87,7 @@ def _req_from_id(id, parent_reqs) -> list[Req]:
     context = LanguageContext()
 
     all_reqs = context.get_definitions_by_root('req')
-    print(f"All reqs = {[req.instance.id for req in all_reqs]}")
+    # print(f"DEBUG: All reqs = {[req.instance.id for req in all_reqs]}")
     for req_def in all_reqs:
         req = req_def.instance
         if req.id == id:
@@ -93,7 +104,7 @@ def _req_from_id(id, parent_reqs) -> list[Req]:
                     return ret_val
 
     # just return empty list if I don't find anything
-    print(f"DEBUG: couldn't fine req for id {id}")
+    print(f"DEBUG: couldn't fine req for id {id} in {[req.instance.id for req in all_reqs]}")
     return []
 
 
@@ -247,3 +258,126 @@ def _write_files(path: str, file_name: str, write_pdf: bool, doc: Doc):
 
 def write_doc(path: str, file_name: str, doc: Doc, write_pdf: bool):
     _write_files(path, file_name, write_pdf, doc)
+
+
+def _trace_from_model(aac_model, parent_reqs: bool) -> VcrmTrace:
+    title = aac_model.name
+    req_ids = []
+
+    # get the top level requirement traces
+    for id in aac_model.requirements:
+        reqs = _req_from_id(id, parent_reqs)
+        for req in reqs:
+            req_ids.append(req.id)
+
+    # get the feature level requirement traces
+    for item in aac_model.behavior:
+        for feature in item.acceptance:
+            for scenario in feature.scenarios:
+                for id in scenario.requirements:
+                    reqs = _req_from_id(id, parent_reqs)
+                    for req in reqs:
+                        req_ids.append(req.id)
+
+    return VcrmTrace(title=title, req_ids=req_ids)
+
+
+def vcrm_from_model(aac_model, parent_reqs: bool) -> VCRM:
+    """Generate a VCRM as a dict from a document model."""
+
+    context = LanguageContext()
+
+    # for now, let's assume that all requirements loaded are relevant rather than only tradec requirements
+    all_req_defs = context.get_definitions_by_root("req")
+    all_reqs = []
+    for req_def in all_req_defs:
+        all_reqs.extend(_req_from_id(req_def.instance.id, parent_reqs))
+
+    # starting with the provided model, identify all traced requirements and then traverse each section 
+    traces: list[VcrmTrace] = []
+    traces.append(_trace_from_model(aac_model, parent_reqs))
+    for comp in aac_model.components:
+        comp_defs = context.get_definitions_by_name(comp.model)
+        if len(comp_defs) != 1:
+            print(f"ERROR:  there should only be 1 model for component {comp.model}")
+            return None
+        else:
+            comp_instance = comp_defs[0].instance
+            comp_vcrm = vcrm_from_model(comp_instance, parent_reqs)
+            for trace in comp_vcrm.traces:
+                traces.append(trace)
+
+    return VCRM(all_reqs=all_reqs, traces=traces)
+
+
+def _prepare_data_for_csv(vcrm):
+    # Step 1: Initialize the dictionary
+    req_to_sections = {req.id: [] for req in vcrm.all_reqs}
+
+    # Step 2: Populate the dictionary
+    for trace in vcrm.traces:
+        for req_id in trace.req_ids:
+            req_to_sections[req_id].append(trace.title)
+
+    return req_to_sections
+
+
+def vcrm_to_csv(vcrm, output_file):
+    req_to_sections = _prepare_data_for_csv(vcrm)
+
+    all_req_ids = []
+    for req in vcrm.all_reqs:
+        all_req_ids.append(req.id)
+
+    with open(output_file, "w", newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        # Prepare the CSV header
+        header = ["Document Section"] + all_req_ids
+        csvwriter.writerow(header)
+
+        sections = []
+        for trace in vcrm.traces:
+            sections.append(trace.title)
+        
+        # Prepare rows
+        for section in sections:
+            row = [section] + ['X' if section in req_to_sections[req] else '-' for req in all_req_ids]
+            csvwriter.writerow(row)
+
+
+def vcrm_to_markdown(vcrm, output_file):
+    req_to_sections = _prepare_data_for_csv(vcrm)
+
+    all_req_ids = []
+    for req in vcrm.all_reqs:
+        all_req_ids.append(req.id)
+
+    with open(output_file, "w") as mdfile:
+        # Prepare the Markdown table header
+        header = ["Document Section"] + all_req_ids
+        mdfile.write("|" + "|".join(header) + "|\n")
+
+        # Prepare the separator row
+        separator = ["---"] * len(header)
+        mdfile.write("|" + "|".join(separator) + "|\n")
+
+        sections = []
+        for trace in vcrm.traces:
+            sections.append(trace.title)
+
+        # Prepare and write rows
+        for section in sections:  # Unique sections/components, sorted for consistency
+            row = [section] + ['X' if section in req_to_sections[req] else '-' for req in all_req_ids]
+            mdfile.write("|" + "|".join(row) + "|\n")
+
+
+def has_full_coverage(vcrm: VCRM) -> bool:
+    """Look to see if there are any requirements that do not trace to the model."""
+
+    req_ids = list(map(type, vcrm.all_reqs))  # deep copy hack
+
+    for trace in vcrm.traces:
+        req_ids = [item for item in req_ids if item not in trace.req_ids]
+
+    return len(req_ids) == 0
