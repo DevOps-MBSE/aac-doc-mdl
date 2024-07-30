@@ -36,6 +36,8 @@ req:
   name: Change Log
   id: GCD-002
   shall: The cookie trade study shall include a change log table.
+  parents:
+    - DOC-001
 
 ---
 req:

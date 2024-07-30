@@ -33,7 +33,7 @@ def _get_model_definition_with_name(title: str, architecture_file: str):
             # This is the document model
             return definition
 
-    print(f"DEBUG: Cannot find model with name {title} in {[definition.instance.name for definition in definitions if definition.get_root_key() == 'model']}")
+    # print(f"DEBUG: Cannot find model with name {title} in {[definition.instance.name for definition in definitions if definition.get_root_key() == 'model']}")
     return None
 
 

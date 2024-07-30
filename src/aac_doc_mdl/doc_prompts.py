@@ -24,7 +24,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 - Review the stakeholder criteria for the content and adapt your draft abstract to ensure all expectations are fully covered.  It is crucial that the abstract addresses all criteria.
 
-- Use the draft in your mind to write a high quality, concise abstract for the requested context in markdown formatting commonly seen in technical writing for formal documentation.  Avoid headings, but organize content using markdown structures like lists and blockquotes as needed to ensure clear, concise content in your abstract.
+- Use the draft in your mind to write a high quality, concise abstract for the requested context in markdown formatting commonly seen in technical writing for formal documentation.  Avoid headings, but organize content using markdown structures like lists and block quotes as needed to ensure clear, concise content in your abstract.
 
 # OUTPUT INSTRUCTIONS
 
@@ -32,7 +32,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 - Ensure the abstract meets all stakeholder needs as defined in the description, requirements, and criteria provided.
 
-- Ensure the markdown code is high quality and authoritative looking, using lists or blockquotes to ensure clarity and readability.
+- Ensure the markdown code is high quality and authoritative looking, using lists or block quotes to ensure clarity and readability.
 
 - Avoid headings in the markdown.
 
@@ -57,7 +57,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 - Review the stakeholder requirements and criteria for the content and adapt your draft document to ensure all expectations are fully covered.  It is crucial that the document explicitly addresses all criteria so that reviewers can easily approve for publication.
 
-- Use the draft in your mind to write a high quality, concise document for the requested context in markdown formatting commonly seen in technical writing for formal documentation.  Use clear heading titles. Feel free to organize content using markdown structures like lists and blockquotes as needed to ensure clear, concise content in your document text.
+- Use the draft in your mind to write a high quality, concise document for the requested context in markdown formatting commonly seen in technical writing for formal documentation.  Use clear heading titles. Feel free to organize content using markdown structures like lists and block quotes as needed to ensure clear, concise content in your document text.
 
 # OUTPUT INSTRUCTIONS
 
@@ -65,7 +65,7 @@ Take a deep breath and think step by step about how to best accomplish this goal
 
 - Ensure the document meets all stakeholder expectations as defined in the description, requirements, and criteria provided.
 
-- Ensure the markdown code is high quality and authoritative looking, using headings, lists, or blockquotes to ensure clarity and readability.
+- Ensure the markdown code is high quality and authoritative looking, using headings, lists, or block quotes to ensure clarity and readability.
 
 - Do not be too wordy or abstract in your narrative.  Remember that this is technical writing and not creative writing.  A complete but concise document is optimal and meets your goals.
 

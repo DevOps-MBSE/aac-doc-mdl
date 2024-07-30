@@ -1,6 +1,6 @@
 import:
   files:
-    - ../spec/cookie_trade_study_reqs.aac
+    - ../spec/cookie_trade_study_reqs_trace.aac
     - ./introduction.aac
     - ./approach.aac
     - ./evaluation.aac

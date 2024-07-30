@@ -10,7 +10,7 @@ model:
   behavior:
     - name: Define Trade Study Criteria
       description: |
-        A trade study will establish criteria for evaluation.  Each criteria must be well defined to include guidance for scoring and differentiating scores using thresholds.  Weights will be defined for each criteria based on it's importance to the final decision.
+        A trade study will identify candidate cookies and establish criteria for evaluation.  Each criteria must be well defined to include guidance for scoring and differentiating scores using thresholds.  Weights will be defined for each criteria based on it's importance to the final decision.
       acceptance:
         - name: Criteria Are Defined
           scenarios:
@@ -39,3 +39,14 @@ model:
                 - Each criteria has a assigned weight.
                 - Each weight value is between 0 and 1 if the criteria is not pass-fail.
                 - If there are any pass-fail criteria, they do not have a weight because they must pass to be considered for the recommendation.
+            - name: Candidates Identified
+              requirements:
+                - GCD-010
+              given:
+                - The trade study file exists.
+              when:
+                - You read the trade study document.
+              then:
+                - Candidate cookies are selected from the cookie vendor catalog.
+                - Chocolate Chip is one of the candidate cookies.
+                - Oatmeal Raisin is one of the candidate cookies
